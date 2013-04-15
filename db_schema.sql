@@ -1,4 +1,3 @@
-CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE "users" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     "ff_id" TEXT NOT NULL,
@@ -33,7 +32,8 @@ CREATE TABLE entries (
     "rawLink" TEXT,
     "date" TEXT,
     "via" TEXT,
-    "user_id" INTEGER
+    "user_id" INTEGER,
+    "source_id" INTEGER
 );
 CREATE UNIQUE INDEX "entries_ix_ff_id" on entries (ff_id ASC);
 CREATE UNIQUE INDEX "users_ix_ff_id" on users (ff_id ASC);
@@ -50,3 +50,8 @@ CREATE TABLE comments (
     "via" TEXT
 );
 CREATE UNIQUE INDEX "comments_ix_ff_id_entry_id" on comments (ff_id ASC, entry_id ASC);
+CREATE TABLE sources (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "address" TEXT NOT NULL,
+    "type" TEXT NOT NULL
+);

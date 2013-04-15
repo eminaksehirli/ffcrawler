@@ -2,7 +2,7 @@
 
 class FFDB
 {
-	const ent_ins_qr = 'INSERT INTO entries VALUES (NULL, :ff_id, :body, :rawBody, :rawLink, :date, :via, :user_id);';
+	const ent_ins_qr = 'INSERT INTO entries VALUES (NULL, :ff_id, :body, :rawBody, :rawLink, :date, :via, :user_id, :source_id);';
 	const comment_ins_qr = 'INSERT OR IGNORE INTO comments VALUES (NULL, :ff_id, :body, :rawBody, :entry_id, :user_id, :date, :via);';
 	const file_ins_qr = 'INSERT OR IGNORE INTO files VALUES (NULL, :url, :name, :entry_id, :type, :size);';
 	const thumbnails_ins_qr = 'INSERT OR IGNORE INTO thumbnails VALUES (NULL, :entry_id, :url, :link);';
@@ -11,6 +11,7 @@ class FFDB
 
 	public $entry_cache = array();
 	public $user_cache = array();
+	private $source_id;
 	protected $db;
 
 	function initialize()
@@ -38,6 +39,7 @@ class FFDB
 			$stat->bindParam(':date', $this->format_date($entry->date));
 			$stat->bindParam(':via', $entry->via->name);
 			$stat->bindParam(':user_id', $this->user_cache[$entry->from->id]);
+			$stat->bindParam(':source_id', $this->source_id);
 
 			$r = $stat->execute();
 
@@ -91,7 +93,7 @@ class FFDB
 
 	function insert_files($entry)
 	{
-		if(isset($f->files))
+		if(isset($entry->files))
 		{
 			foreach($entry->files as $file)
 			{
@@ -146,6 +148,7 @@ class FFDB
 			}
 			else
 			{
+				//echo("$f->id - $f->rawLink is already in the DB: entry_id - " . $this->entry_cache[$f->id] . "\n");
 				$is_changed = false;
 
 
@@ -193,15 +196,7 @@ class FFDB
 
 		$results = $stat->execute();
 
-		$comments = array();
-
-		while($row = $results->fetchArray())
-		{
-			$comments[] = $row;
-		}
-
-		return $comments;
-
+		return $this->convert_to_array($results);
 	}
 
 	function get_likes_of($entry)
@@ -213,30 +208,38 @@ class FFDB
 
 		$results = $stat->execute();
 
-		$likes = array();
+		return $this->convert_to_array($results);
+	}
+
+	function get_sources()
+	{
+		$qr = 'SELECT * from sources';
+
+		return $this->convert_to_array($this->db->query($qr));
+	}
+
+	function get_files()
+	{
+		$qr = 'SELECT * from files;';
+
+		return $this->convert_to_array($this->db->query($qr));
+	}
+
+	private function convert_to_array($results)
+	{
+		$data = array();
 
 		while($row = $results->fetchArray())
 		{
-			$likes[] = $row;
+			$data[] = $row;
 		}
 
-		return $likes;
+		return $data;
 	}
 
-
-	function get_entry_by_ff_id($ff_id)
+	function set_source_id($source_id)
 	{
-		$qr = 'SELECT * FROM entries WHERE ff_id = :ff_id;';
-
-		$stat = $this->db->prepare($qr);
-		$stat->bindParam(':ff_id', $ff_id);
-
-
-		$entry = $stat->execute();
-
-		$qr = 'SELECT * FROM comments WHERE ';
-
-
+		$this->source_id = $source_id;
 	}
 
 	function update_user_cache()
