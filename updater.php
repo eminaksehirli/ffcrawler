@@ -4,7 +4,6 @@ require_once('FFDB.php');
 require_once('credentials.php');
 
 $ffdb = new FFDB();
-$ffdb->initialize();
 
 $sources = $ffdb->get_sources();
 $out_dir = "/tmp/ff-yedek/";
@@ -21,7 +20,7 @@ foreach($sources as $source)
 	}
 
 	$fetch_again = true;
-	$fetch_size = 100;
+	$fetch_size = 100; // Because of API limitations maximum is 100!
 	$start = 0;
 
 	while($fetch_again)
@@ -51,7 +50,7 @@ foreach($sources as $source)
 		$num_of_changed = $ffdb->insert_if_changed($ff->entries);
 
 		echo("Number of changed entries: $num_of_changed \n");
-		if($num_of_changed > $fetch_size/2)
+		if($num_of_changed > $fetch_size/4)
 		{
 			$fetch_again = true;
 		}

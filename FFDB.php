@@ -14,7 +14,7 @@ class FFDB
 	private $source_id;
 	protected $db;
 
-	function initialize()
+	function __construct()
 	{
 		$dbName = "ffebook.dat";
 		$this->db = new SQLite3($dbName);
@@ -160,7 +160,7 @@ class FFDB
 					{
 						// Only insert comments on change do not delete them
 						$is_changed = true;
-						echo("$f->id comms: " . sizeof($comments) . " != " . sizeof($f->comments) . "\n");
+						//echo("$f->id comms: " . sizeof($comments) . " != " . sizeof($f->comments) . "\n");
 					}
 				}
 
@@ -186,13 +186,27 @@ class FFDB
 		return $num_of_changed;
 	}
 
+	function insert_worker_data($worker_name, $work_title, $value)
+	{
+		$qr = 'INSERT INTO worker_data VALUES (NULL, :worker_name, :work_title, :value, :time)';
+
+		$stat = $this->db->prepare($qr);
+		$stat->bindParam(':worker_name', $worker_name);
+		$stat->bindParam(':work_title', $work_title);
+		$stat->bindParam(':value', $value);
+		$stat->bindValue(':time', date("c", time()));
+
+		$stat->execute();
+
+	}
+
 	function get_comments_of($entry)
 	{
 		$qr = 'SELECT * FROM comments WHERE entry_id = :entry_id;';
 
 		$stat = $this->db->prepare($qr);
 		$stat->bindParam(':entry_id', $this->entry_cache[$entry->id]);
-		//$stat->bindParam(':entry_id', $this->entry_cache[$entry['id']]);
+		//$stat->bindParam(':entry_id', $this->entry_cache[$entry['id']]); // This is for debugging.
 
 		$results = $stat->execute();
 
@@ -218,18 +232,61 @@ class FFDB
 		return $this->convert_to_array($this->db->query($qr));
 	}
 
-	function get_files()
+	function get_files($start_id = 0)
 	{
-		$qr = 'SELECT * from files;';
+		$qr = 'SELECT * from files WHERE id > :start_id;';
+
+		$stat = $this->db->prepare($qr);
+		$stat->bindParam(':start_id', $start_id);
+
+		$results = $stat->execute();
+
+		return $this->convert_to_array($results);
+	}
+
+	function get_entries()
+	{
+		$qr = 'SELECT * from entries;';
 
 		return $this->convert_to_array($this->db->query($qr));
 	}
+
+	function get_comments()
+	{
+		$qr = 'SELECT * from comments;';
+
+		return $this->convert_to_array($this->db->query($qr));
+	}
+
+	function get_worker_data($worker_name, $work_title)
+	{
+		$qr = "SELECT * from worker_data WHERE worker_name=:worker_name and work_title=:work_title ORDER BY id DESC LIMIT 1";
+
+		$stat = $this->db->prepare($qr);
+		$stat->bindValue(':worker_name', $worker_name);
+		$stat->bindValue(':work_title', $work_title);
+
+		$results = $stat->execute();
+
+		$d = $this->convert_to_array($results);
+
+		return $d[0]['value'];
+	}
+
+	function get_last_id_of_files()
+	{
+		$qr = 'SELECT id from files ORDER BY id DESC LIMIT 1';
+
+		$d = $this->convert_to_array($this->db->query($qr));
+		return $d[0]['id'];
+	}
+
 
 	private function convert_to_array($results)
 	{
 		$data = array();
 
-		while($row = $results->fetchArray())
+		while($row = $results->fetchArray(SQLITE3_ASSOC))
 		{
 			$data[] = $row;
 		}

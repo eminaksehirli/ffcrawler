@@ -55,3 +55,10 @@ CREATE TABLE sources (
     "address" TEXT NOT NULL,
     "type" TEXT NOT NULL
 );
+CREATE TABLE "worker_data" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "worker_name" TEXT NOT NULL,
+    "work_title" TEXT NOT NULL,
+    "value" TEXT,
+    "time" TEXT
+);
