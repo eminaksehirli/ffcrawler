@@ -1,1 +1,48 @@
-This project is created to backup feeds and documents on friendfeed. But the intention is to do more than that.
+This project is created to backup feeds and documents on friendfeed.
+But the intention is to do more than that.
+
+updater.php
+-----------
+Download the latest entries in JSON format using ff API. Inserts entries and
+all of their sub-properties into FFDB. Stops when the number of changed entries
+gets below a certain threshold.
+
+Sources of feeds are kept in source relation (table) of FFDB.
+
+file_downloader.php
+-------------------
+Downloads the files from the files relation of FFDB. After downloading,
+determines the type of the file and inserts the info into BooksDb. Keeps track
+of what is already downloaded and what is not.
+
+FFDB.php
+--------
+Provides a basic data model for the database operations on FFDB. FFDB stores
+the FF related data, such as entries, comments, feed sources etc.
+
+BookDb.php
+----------
+Provides a basic data model for the database operation on BookDb. BookDb stores
+the data over actual books, such as author, title, language, filename etc.
+
+credentials.php
+---------------
+Required credentials to connect to FF API, namely username and remote_key (
+https://friendfeed.com/remotekey ).
+
+config.php
+----------
+Condiguration options, e.g., download directories, db filenames.
+
+ffdb.dat
+bookdb.dat
+----------
+Sqlite databases for ff entries and books.
+
+db_*_schema.sql
+---------------
+SQL schema file for the specified DB.
+
+db_*_intial.sql
+---------------
+Initial sql queries that should be run on the specified DB before first use.

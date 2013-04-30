@@ -2,3 +2,5 @@ credentials.sh
 credentials.php
 *~
 *.swp
+config.php
+*.dat
