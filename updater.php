@@ -2,11 +2,12 @@
 
 require_once('FFDB.php');
 require_once('credentials.php');
+require_once('config.php');
 
 $ffdb = new FFDB();
 
 $sources = $ffdb->get_sources();
-$out_dir = "/tmp/ff-yedek/";
+$out_dir = Config::json_out_dir;
 
 //$online = false;
 $online = true;
@@ -22,6 +23,8 @@ foreach($sources as $source)
 	$fetch_again = true;
 	$fetch_size = 100; // Because of API limitations maximum is 100!
 	$start = 0;
+
+	$ffdb->begin();
 
 	while($fetch_again)
 	{
@@ -56,6 +59,8 @@ foreach($sources as $source)
 		}
 		$start += $fetch_size;
 	}
+
+	$num_of_entries = $ffdb->end();
 }
 
 

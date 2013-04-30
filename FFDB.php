@@ -1,5 +1,6 @@
 <?php
 
+require_once('config.php');
 class FFDB
 {
 	const ent_ins_qr = 'INSERT INTO entries VALUES (NULL, :ff_id, :body, :rawBody, :rawLink, :date, :via, :user_id, :source_id);';
@@ -16,7 +17,7 @@ class FFDB
 
 	function __construct()
 	{
-		$dbName = "ffebook.dat";
+		$dbName = Config::ffdb_file;
 		$this->db = new SQLite3($dbName);
 
 		$this->update_entry_cache();
@@ -158,7 +159,7 @@ class FFDB
 
 					if(sizeof($comments) < sizeof($f->comments))
 					{
-						// Only insert comments on change do not delete them
+						// Only inserts comments on change does not delete them
 						$is_changed = true;
 						//echo("$f->id comms: " . sizeof($comments) . " != " . sizeof($f->comments) . "\n");
 					}
@@ -170,9 +171,9 @@ class FFDB
 
 					if(sizeof($likes) < sizeof($f->likes))
 					{
-						// Only insert likes on change do not delete them
+						// Only inserts likes on change does not delete them
 						$is_changed = true;
-						echo("$f->id likes: " . sizeof($likes) . " != " . sizeof($f->likes) . "\n");
+						//echo("$f->id likes: " . sizeof($likes) . " != " . sizeof($f->likes) . "\n");
 					}
 				}
 
@@ -332,6 +333,20 @@ class FFDB
 		}
 	}
 
+	function begin()
+	{
+		$qr = 'BEGIN';
+		$this->db->query($qr);
+	}
+
+	function end()
+	{
+		$qr = 'END';
+		$update_count = $this->db->query($qr);
+		return $update_count;
+
+	}
+
 	function format_date($str)
 	{
 		$trans = array("T" => " ", "Z" => "");
@@ -343,6 +358,3 @@ class FFDB
 		return trim(strtr($str, $trans));
 	}
 }
-
-
-
