@@ -1,12 +1,12 @@
 <?php
 
 require_once('FFDB.php');
-require_once('BookDb.php');
+require_once('BookDB.php');
 require_once('credentials.php');
 require_once('config.php');
 
 $ffdb = new FFDB();
-$bookdb = new BookDb();
+$bookdb = new BookDB();
 
 $resume_data = $ffdb->get_worker_data('file_downloader', 'last_id');
 

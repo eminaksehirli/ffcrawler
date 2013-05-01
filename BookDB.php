@@ -2,7 +2,7 @@
 
 require_once('config.php');
 
-class BookDb
+class BookDB
 {
 	protected $db;
 	public $types;
@@ -45,6 +45,50 @@ class BookDb
 		}
 		return $types;
 	}
+
+	function get_languages()
+	{
+		$qr = 'SELECT * FROM languages;';
+
+		$res = $this->db->query($qr);
+
+		$languages = array();
+
+		while($row = $res->fetchArray())
+		{
+			$languages[$row['short']] = $row['id'];
+		}
+		return $languages;
+	}
+
+	function get_filenames()
+	{
+		$qr = 'SELECT id, filename FROM books;';
+
+		$res = $this->db->query($qr);
+
+		$files = array();
+
+		while($row = $res->fetchArray())
+		{
+			$files[$row['filename']] = $row['id'];
+		}
+
+		return $files;
+	}
+
+	function update_language($id, $language_id)
+	{
+		$qr = 'UPDATE books SET language_id = :language_id WHERE id = :id;';
+
+		$stat = $this->db->prepare($qr);
+
+		$stat->bindParam(':id', $id);
+		$stat->bindParam(':language_id', $language_id);
+
+		$stat->execute();
+	}
+
 
 	function begin()
 	{
