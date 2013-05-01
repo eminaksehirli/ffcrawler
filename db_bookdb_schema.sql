@@ -10,7 +10,8 @@ CREATE TABLE "books" (
     "type" INTEGER,
     "link" TEXT,
     "source" TEXT,
-    "state" INTEGER
+    "state" INTEGER,
+    "language_id" INTEGER
 );
 CREATE TABLE "states" (
     "id" INTEGER PRIMARY KEY NOT NULL,
@@ -25,5 +26,9 @@ CREATE TABLE "types" (
 );
 
 CREATE UNIQUE INDEX "books_ix_link_source" on books (link ASC, source ASC);
-
+CREATE TABLE "languages" (
+    "id" INTEGER PRIMARY KEY NOT NULL,
+    "humane" TEXT NOT NULL,
+    "short" TEXT NOT NULL
+);
 

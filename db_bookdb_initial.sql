@@ -15,3 +15,7 @@ INSERT INTO types VALUES (5, 'text/html', 'html', 'html');
 INSERT INTO types VALUES (6, 'text/rtf', 'rtf', 'rtf');
 INSERT INTO types VALUES (7, 'image/vnd.djvu', 'djvu', 'djvu');
 INSERT INTO types VALUES (8, 'Mobipocket', 'mobi', 'mobi');
+
+INSERT INTO languages VALUES (1, 'Türkçe', 'tr');
+INSERT INTO languages VALUES (2, 'English', 'en');
+
