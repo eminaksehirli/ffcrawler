@@ -25,8 +25,15 @@ for($i=0; $i < sizeof($files); $i++)
 {
 	$file = $files[$i];
 	$u = $file['url'];
-	$c = file_get_contents($u);
+
 	echo("Downloading... ");
+	$c = file_get_contents($u);
+
+	if(!$c)
+	{
+		echo("Cannot open '$u' . Aborting!\n");
+		break;
+	}
 
 	$file_name = $out_dir . $file['name'];
 
@@ -38,21 +45,21 @@ for($i=0; $i < sizeof($files); $i++)
 
 	if(!file_put_contents($file_name, $c))
 	{
-		echo("Cannot write the file '$file_name' . Aborting!");
-		exit;
+		echo("Cannot write the file '$file_name' . Aborting!\n");
+		break;
 	}
 	
 	echo("Saved to $file_name \n");
 
 	// Insert into booksDb
-	$n = $file['name'];
+	$n = pathinfo($file_name, PATHINFO_BASENAME);
 	$type = type_of($file_name);
 	$p = pathinfo($n);
 	$basename =  $p['filename'];
 	$a = $t = '';
 	if($d = strrpos($basename, "-")){
 		$a = trim(substr($basename, 0, $d));
-		$t = trim(substr($basename, $d+1));
+		$t = trim(substr($basename, $d + 1));
 	}
 
 	$bookdb->insert_a_book($a, $t, $n, $type['id'], $file['url'], 1);

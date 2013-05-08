@@ -17,7 +17,7 @@ class BookDB
 
 	function insert_a_book($author, $title, $filename, $type, $link, $source)
 	{
-		$qr = 'INSERT INTO books VALUES (NULL, :author, :title, :filename, :type, :link, :source, 1)';
+		$qr = 'INSERT INTO books VALUES (NULL, :author, :title, :filename, :type, :link, :source, 1, NULL)';
 		$stat = $this->db->prepare($qr);
 
 		foreach(Array('author', 'title', 'filename', 'type', 'link', 'source') as $param)
@@ -89,6 +89,16 @@ class BookDB
 		$stat->execute();
 	}
 
+	function get_formatted_info()
+	{
+		$qr = 'SELECT b.id, author, title, filename, t.humane as type, l.short as language, b.link 
+			FROM books b	LEFT JOIN types t ON b.type = t.id LEFT JOIN languages l ON l.id = b.language_id';
+
+		$results = $this->db->query($qr);
+
+		return self::convert_to_array($results);
+	}
+
 
 	function begin()
 	{
@@ -98,9 +108,21 @@ class BookDB
 
 	function end()
 	{
-		$qr = 'END';
+		$qr = 'COMMIT';
 		$update_count = $this->db->query($qr);
 		return $update_count;
 
+	}
+
+	static function convert_to_array($results)
+	{
+		$data = array();
+
+		while($row = $results->fetchArray(SQLITE3_ASSOC))
+		{
+			$data[] = $row;
+		}
+
+		return $data;
 	}
 }

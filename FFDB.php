@@ -282,6 +282,22 @@ class FFDB
 		return $d[0]['id'];
 	}
 
+	function get_url_to_entry()
+	{
+		$qr = 'SELECT url, rawBody, rawLink FROM files f LEFT JOIN entries e ON f.entry_id = e.id';
+
+		$results = $this->db->query($qr);
+
+		$files = array();
+
+		while($row = $results->fetchArray(SQLITE3_ASSOC))
+		{
+			$files[$row['url']] = array('body' => $row['rawBody'], 'link' => $row['rawLink']);
+		}
+
+		return $files;
+	}
+
 
 	private function convert_to_array($results)
 	{
@@ -341,7 +357,7 @@ class FFDB
 
 	function end()
 	{
-		$qr = 'END';
+		$qr = 'COMMIT';
 		$update_count = $this->db->query($qr);
 		return $update_count;
 
