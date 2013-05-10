@@ -89,12 +89,17 @@ class BookDB
 		$stat->execute();
 	}
 
-	function get_formatted_info()
+	function get_formatted_info($start_id)
 	{
 		$qr = 'SELECT b.id, author, title, filename, t.humane as type, l.short as language, b.link 
-			FROM books b	LEFT JOIN types t ON b.type = t.id LEFT JOIN languages l ON l.id = b.language_id';
+			FROM books b LEFT JOIN types t ON b.type = t.id LEFT JOIN languages l ON l.id = b.language_id 
+			WHERE b.id > :id;';
 
-		$results = $this->db->query($qr);
+		$stat = $this->db->prepare($qr);
+
+		$stat->bindParam(':id', $start_id);
+
+		$results = $stat->execute();
 
 		return self::convert_to_array($results);
 	}

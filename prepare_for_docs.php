@@ -7,16 +7,18 @@ $ffdb = new FFDB();
 $bookdb = new BookDB();
 
 $ffurls = $ffdb->get_url_to_entry();
+$start_id = $ffdb->get_worker_data('docs_preparer', 'last_id');
 
-$books = $bookdb->get_formatted_info();
+$books = $bookdb->get_formatted_info($start_id);
 
 $title = implode(array("id", "Yazar", "Kitap Adı", "Dosya Adı", "Uzantı", "Dil", "Tamam mı?", "Notlar", "Dosya URL", "Entry", "Entry URL"), "\t");
 
-$out_file = @fopen('/tmp/book_db_1.csv', "w");
+$out_file = @fopen('/tmp/book_db_' . $start_id . '.csv', "w");
 
 fputs($out_file, $title . "\n");
 
-$book_counter = 0;
+$book_counter = $start_id;
+$last_succesful_id = $start_id;
 //for($i=0; $i< 20; $i++)
 foreach($books as $book_arr)
 {
@@ -55,7 +57,11 @@ foreach($books as $book_arr)
 		$out_file = @fopen('/tmp/book_db_' . ($book_counter + 1) . '.csv', "w");
 		fputs($out_file, $title . "\n");
 	}
+
+	$last_succesful_id = $book_arr['id'];
 }
+
+$ffdb->insert_worker_data('docs_preparer', 'last_id', $last_succesful_id);
 
 function remove_link($str)
 {
