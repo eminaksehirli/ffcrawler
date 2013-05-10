@@ -21,6 +21,7 @@ $ffdb->insert_worker_data('file_downloader', 'start_id', $resume_data + 1);
 
 $bookdb->begin();
 
+$last_successful_id = $resume_data;
 for($i=0; $i < sizeof($files); $i++)
 {
 	$file = $files[$i];
@@ -63,12 +64,14 @@ for($i=0; $i < sizeof($files); $i++)
 	}
 
 	$bookdb->insert_a_book($a, $t, $n, $type['id'], $file['url'], 1);
+
+	$last_successful_id = $file['id'];
 }
 
 $num_of_entries = $bookdb->end();
 //echo("$num_of_entries books are added to database.");
 
-$last_id = $ffdb->get_last_id_of_files();
+$last_id = $last_successful_id;
 $ffdb->insert_worker_data('file_downloader', 'last_id', $last_id);
 
 finfo_close($finfo);
