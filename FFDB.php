@@ -1,4 +1,14 @@
 <?php
+/**
+ * This file is part of ffcrawler.
+ *
+ *  Copyright 2013 by Emin Aksehirli <emin.aksehirli@gmail.com>
+ *
+ *  Licensed under GNU Affero General Public License 1.0 or later.
+ *  Some rights reserved. See COPYING.
+ *
+ * @license AGPL-1.0+ <http://spdx.org/licenses/AGPL-1.0>
+ */
 
 require_once('config.php');
 class FFDB
